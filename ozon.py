@@ -27,6 +27,19 @@ def get_data(id, key):
     # comment = customer["address"]["comment"]
     # latitude = customer["address"]["latitude"]
     # longitude = customer["address"]["longitude"]
-    return '123', '12.03.2022-28.04.2023', '3', '1059', '', 'yl pyshkina', '+79834', 'comment', 'comment_dr'
+    product_data = 'Какой-то продук'
+    product_id = 'Айди'
+    delivery_date_begin = 'Начало даты'
+    delivery_date_end = 'Конец даты'
+    quantity = 'Количество'
+    price = 'цена'
+    customer = 'Информация клиента'
+    first_address = 'адрес управляющего ботом'
+    second_address = 'Адресс клиента'
+    client_phone = 'Телефон клиента'
+    comment = 'Комментарий клиента'
+    # latitude = customer["address"]["latitude"]
+    # longitude = customer["address"]["longitude"]'comment_dr'
+    return product_data, product_id, delivery_date_begin, delivery_date_end, quantity, price, first_address, second_address, client_phone, comment
 
 

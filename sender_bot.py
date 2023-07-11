@@ -5,6 +5,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from geopy.geocoders import Nominatim
+from keyboards import main_kb
 
 
 storage = MemoryStorage()
@@ -20,6 +21,20 @@ schema = 'Магазин ___. Забрать заказ ___. Если у вас 
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
+    await message.answer('Приветствую, сдесь ты можешь управлять своими заказами', reply_markup=main_kb)
+#     await message.answer(
+# f"""Артикул: {articul}
+# Дата отправления-доставки: {date}
+# Количество: {quantity}
+# Цена: {price}
+# Адресс: {address}
+# Адресс клиента: {address_client}
+# Телефон клиента: {phone_client}
+# Комментарий клиента {comment_client}
+# Комментарий для водителя: {comment_taxi}""", reply_markup=main_kb, )
+
+@dp.message_handler(commands=['watch_orders'])
+async def watch_orders(message: types.Message):
     lst_data = get_data(client_id, api_key)
     articul = lst_data[0]
     date = lst_data[1]
@@ -40,6 +55,7 @@ f"""Артикул: {articul}
 Телефон клиента: {phone_client}
 Комментарий клиента {comment_client}
 Комментарий для водителя: {comment_taxi}""")
+    
 
 @dp.message_handler(commands=["send_loc"])
 async def send_loc(message: types.Message):

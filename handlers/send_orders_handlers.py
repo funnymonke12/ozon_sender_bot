@@ -4,7 +4,9 @@ from geopy.geocoders import Nominatim
 from aiogram import Dispatcher
 from aiogram import types
 from create_bot import bot
-
+from call_taxi import call_taxi
+from config import client_id, api_key
+from ozon import get_clients_coords
 
 
 class Form(StatesGroup):
@@ -25,19 +27,20 @@ async def process_position(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['position'] = message.text
 
-    if data['position'].split()[0].isdigit():
-        long = float(data['position'].split()[0])
-        lat = float(data['position'].split()[1])
-    else:
-        geolocator = Nominatim(user_agent="Tester")
-        location = geolocator.geocode(data['position'])
-        print(location)
-        print(location.latitude, location.longitude)
-        long = location.latitude
-        lat = location.longitude
-    print(data['position'])
+        if data['position'].split()[0].isdigit():
 
-    await bot.send_location(message.chat.id, long, lat)
+            data['long'] = float(data['position'].split()[0])
+            data['lat'] = float(data['position'].split()[1])
+        else:
+            geolocator = Nominatim(user_agent="Tester")
+            location = geolocator.geocode(data['position'])
+            print(location)
+            print(location.latitude, location.longitude)
+            data['long'] = location.latitude
+            data['lat'] = location.longitude
+
+
+    await bot.send_location(message.chat.id, data['long'], data['lat'])
     await Form.next()
     await message.answer(f'Впишите слова вместо пропусков в {schema} через пробел')
 
@@ -59,6 +62,16 @@ async def process_confirm(message: types.Message, state: FSMContext):
         await message.answer('Вызываем такси')
     elif data["confirm"].lower == 'n':
         await message.answer('Отправка отменена')
+        return
+    client_lat = get_clients_coords(client_id, api_key)[0]
+    client_long = get_clients_coords(client_lat, api_key)[1]
+    taxi_link = call_taxi(data['lat'], data['long'], client_lat, client_long)
+    await message.answer(taxi_link)
+    await message.answer('Описание для таксиста: ')
+    await message.answer(f"{data['message_to_order']}\n{schema}")
+
+
+
 
     await state.finish()
 

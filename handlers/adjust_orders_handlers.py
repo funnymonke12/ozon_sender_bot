@@ -18,33 +18,41 @@ async def send_welcome(message: types.Message):
 # @dp.message_handler(commands=['watch_orders'])
 async def watch_orders(message: types.Message):
     lst_data = get_data(client_id, api_key)
-    articul = lst_data[0]
-    date_begin = lst_data[1]
-    date_end = lst_data[2]
-    quantity = lst_data[3]
-    price = lst_data[4]
-    address = lst_data[5]
-    address_client = lst_data[6]
-    phone_client = lst_data[7]
-    comment_client = lst_data[8]
-    comment_taxi = lst_data[9]
-    delivery_status = lst_data[10]
-    posting_number = lst_data[11]
-    await message.answer(
-f"""Артикул: {articul}
-Дата отправления-доставки: {date_begin}-{date_end}
-Количество: {quantity}
-Цена: {price}
-Адресс: {address}
-Адресс клиента: {address_client}
-Телефон клиента: {phone_client}
-Комментарий клиента {comment_client}
-Комментарий для водителя: {comment_taxi}
-статус статус: {delivery_status}
-Номер поставки: {posting_number}""", reply_markup=inline_change_kb)
-    
+    for key in lst_data.keys():
+        print(key)
+        data = lst_data[key]['data']
+        id = lst_data[key]['id']
+        date_begin = lst_data[key]['date_begin']
+        date_end = lst_data[key]['date_end']
+        quantity = lst_data[key]['quantity']
+        price = lst_data[key]['price']
+        f_addres = lst_data[key]['f_addres']
+        s_addres = lst_data[key]['s_addres']
+        phone = lst_data[key]['phone']
+        comment = lst_data[key]['comment']
+        dr_comment = lst_data[key]['dr_comment']
+        del_status = lst_data[key]['del_status']
+        posting_number = lst_data[key]['posting_number']
+        card_id = lst_data[key]['card_id']
+        await message.answer(
+    f"""Артикул: {id}
+    Дата отправления-доставки: {date_begin}-{date_end}
+    Количество: {quantity}
+    Цена: {price}
+    Адресс: {f_addres}
+    Адресс клиента: {s_addres}
+    Телефон клиента: {phone}
+    Комментарий клиента {comment}
+    Комментарий для водителя: {dr_comment}
+    статус статус: {del_status}
+    Номер поставки: {posting_number}
+    Айди карточки в боте: {card_id}""", reply_markup=inline_change_kb)
+
+post_number = None
 # @dp.callback_query_handler(func=lambda c: c.data == 'change')
 async def process_callback_button1(callback_query: types.CallbackQuery):
+    global post_number
+    post_number = callback_query.message.text.split('\n')[-1].split(': ')[-1]
     await callback_query.message.answer('Выберите статус доставки', reply_markup=change_status_kb)
     await Form.status.set()
 
@@ -55,13 +63,13 @@ async def process_status(message: types.Message, state: FSMContext):
 
     await message.answer(f" {status}")
     if status == 'Доставляется':
-        write_delivering(client_id, api_key)
+        write_delivering(client_id, api_key, post_number)
     elif status == 'Последняя миля':
-        write_last_mile(client_id, api_key)
+        write_last_mile(client_id, api_key, post_number)
     elif status == 'Доставлено':
-        write_delivered(client_id, api_key)
+        write_delivered(client_id, api_key, post_number)
     elif status == 'Отправлено продавцом':
-        write_sended_by_seller(client_id, api_key)
+        write_sended_by_seller(client_id, api_key, post_number)
     await state.finish()
 
 

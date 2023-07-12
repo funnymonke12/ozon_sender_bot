@@ -10,6 +10,7 @@ from ozon import get_clients_coords
 
 
 class Form(StatesGroup):
+    card_id = State()
     position = State()
     message_to_order = State()
     confirm = State()
@@ -19,8 +20,16 @@ schema = 'Магазин ___. Забрать заказ ___. Если у вас 
 
 # @dp.message_handler(commands=["send_loc"])
 async def send_loc(message: types.Message):
-    await Form.position.set()
-    await message.reply("Введи адрес или координаты через пробел.")
+    await Form.card_id.set()
+    await message.reply("Введите id карточки. Чтобы вызвать такси")
+
+# state = Form.card_id
+async def procces_card_id(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['card_id'] = message.text
+
+    await Form.next()
+    await message.answer('Введи свой аддрес: ')
 
 # @dp.message_handler(state=Form.position)
 async def process_position(message: types.Message, state: FSMContext):
@@ -28,7 +37,6 @@ async def process_position(message: types.Message, state: FSMContext):
         data['position'] = message.text
 
         if data['position'].split()[0].isdigit():
-
             data['long'] = float(data['position'].split()[0])
             data['lat'] = float(data['position'].split()[1])
         else:
@@ -63,20 +71,17 @@ async def process_confirm(message: types.Message, state: FSMContext):
     elif data["confirm"].lower == 'n':
         await message.answer('Отправка отменена')
         return
-    client_lat = get_clients_coords(client_id, api_key)[0]
-    client_long = get_clients_coords(client_lat, api_key)[1]
+    client_lat = get_clients_coords(client_id, api_key, data['card_id'])[0]
+    client_long = get_clients_coords(client_lat, api_key, data['card_id'])[1]
     taxi_link = call_taxi(data['lat'], data['long'], client_lat, client_long)
     await message.answer(taxi_link)
     await message.answer('Описание для таксиста: ')
     await message.answer(f"{data['message_to_order']}\n{schema}")
-
-
-
-
     await state.finish()
 
 def register_handlers_send(dp: Dispatcher):
     dp.register_message_handler(send_loc, commands=["send_loc"])
+    dp.register_message_handler(procces_card_id, state=Form.card_id)
     dp.register_message_handler(process_position, state=Form.position)
     dp.register_message_handler(process_descr, state=Form.message_to_order)
     dp.register_message_handler(process_confirm, state=Form.confirm)

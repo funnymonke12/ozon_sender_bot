@@ -34,7 +34,7 @@ def get_data(id, key):
         # latitude = customer["address"]["latitude"]
         # longitude = customer["address"]["longitude"]
     posts_dict = {}
-    for i in range(1, 4):
+    for i in range(0, 3):
         product_data = 'Какой-то продукт'
         product_id = 'Айди'
         delivery_date_begin = 'Начало даты'
@@ -68,7 +68,7 @@ def get_data(id, key):
                                    'card_id': str(i)}
     return posts_dict
 
-def get_clients_coords(id, api):
+def get_clients_coords(id, api, client_id):
     # url = 'https://api-seller.ozon.ru/v3/posting/fbs/unfulfilled/list'
     # params = {"with": {
     #             "analytics_data": True,
@@ -80,7 +80,7 @@ def get_clients_coords(id, api):
     #     'Api-Key': api_key
     # }
     # response = requests.post(url, params).text
-    # posts = response["result"]["postings"][0]
+    # posts = response["result"]["postings"][client_id]
     # customer = posts["customer"]
     # latitude = customer["address"]["latitude"]
     # longitude = customer["address"]["longitude"]

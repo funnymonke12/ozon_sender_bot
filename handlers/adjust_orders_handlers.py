@@ -61,7 +61,7 @@ async def process_status(message: types.Message, state: FSMContext):
         data['status'] = message.text
         status = data['status']
 
-    await message.answer(f" {status}")
+    await message.answer(f"Статус отправки поменян на: {status}")
     if status == 'Доставляется':
         write_delivering(client_id, api_key, post_number)
     elif status == 'Последняя миля':

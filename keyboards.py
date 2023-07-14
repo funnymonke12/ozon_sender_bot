@@ -6,7 +6,7 @@ main_kb.add(button_show_orders)
 
 inline_button_change = InlineKeyboardButton('Поменять статус отправки', callback_data='change')
 inline_button_send = InlineKeyboardButton('Отправить заказ', callback_data='send')
-inline_change_kb = InlineKeyboardMarkup().add(inline_button_change)
+inline_change_kb = InlineKeyboardMarkup().add(inline_button_change).add(inline_button_send)
 
 button_sending = KeyboardButton('Доставляется')
 button_last_mile = KeyboardButton('Последняя миля')

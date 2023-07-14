@@ -8,8 +8,6 @@ from call_taxi import call_taxi
 from ozon import get_data
 from config import client_id, api_key
 
-
-
 class Form(StatesGroup):
     card_id = State()
     position = State()
@@ -48,7 +46,6 @@ async def process_position(message: types.Message, state: FSMContext):
             data['long'] = location.latitude
             data['lat'] = location.longitude
 
-
     await bot.send_location(message.chat.id, data['long'], data['lat'])
     await Form.next()
     await message.answer(f'Впишите слова вместо пропусков в {schema} через пробел')
@@ -68,9 +65,7 @@ async def process_confirm(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['confirm'] = message.text
     schema = 'Отдавать БЕЗ чека! Это подарок!' # Номер получателя
-    if data['confirm'].lower() == 'y':
-        await message.answer('Вызываем такси')
-    elif data["confirm"].lower == 'n':
+    if data["confirm"].lower == 'n':
         await message.answer('Отправка отменена')
         return
     # client_lat = get_clients_coords(data['card_id'])[0]

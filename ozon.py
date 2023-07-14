@@ -28,15 +28,16 @@ def get_data(id, key):
     posts = posts
     posts_dict = {}
     for i, post in enumerate(posts):
+
         delivery_status = post["status"]
         product_data = post["products"][0]
+        product_name = product_data["name"]
         product_id = product_data["offer_id"]
-        delivery_date_begin = post["analytics_data"]['delivery_date_begin']
-        delivery_date_end = post["analytics_data"]['delivery_date_end']
+        delivery_date_begin = post["analytics_data"]['delivery_date_begin'].split('T')
+        delivery_date_end = post["analytics_data"]['delivery_date_end'].split('T')
         quantity = product_data['quantity']
         price = product_data["price"]
         customer = post["customer"]
-        first_address = ''
         second_address = customer["address"]["address_tail"]
         client_phone = customer["phone"]
         comment = customer["address"]["comment"]
@@ -44,13 +45,13 @@ def get_data(id, key):
         longitude = customer["address"]["longitude"]
         posting_number = post["posting_number"]
         posts_dict[str(i)] = {'delivery_status': delivery_status,
+                              'product_name': product_name,
                               'product_id': product_id,
                               'delivery_date_begin': delivery_date_begin,
                               'delivery_date_end': delivery_date_end,
                               'quantity': quantity,
                               'price': price,
-                              'first_addres': first_address,
-                              'second_addres': second_address,
+                              'second_address': second_address,
                               'client_phone': client_phone,
                               'comment': comment,
                               'posting_number': posting_number,
@@ -65,6 +66,10 @@ def get_clients_coords(card_id):
     data = get_data(client_id, api_key)
     if str(card_id) in data.keys():
         return data[str(card_id)]['latitude'], data[str(card_id)]['longitude']
+
+def get_clients_data(card_id):
+    data = get_data(client_id, api_key)
+    return data[str(card_id)]
 
 
 def write_delivering(id, api, posting_number):

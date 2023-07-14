@@ -3,7 +3,7 @@ import uuid
 from config import OAuth
 
 
-def call_taxi(commentary='Без комментариев'):
+def call_taxi(commentary):
     myuuid = uuid.uuid4()
     url = f'https://b2b.taxi.yandex.net/b2b/cargo/integration/v2/claims/create'
     query = {'request_id': myuuid}
@@ -12,6 +12,7 @@ def call_taxi(commentary='Без комментариев'):
     params = {"auto_accept": True,
               'comment': commentary}
     response = requests.post(url, params=query, headers=headers, json=params)
+    print(response)
 
     url = f'https://b2b.taxi.yandex.net/b2b/cargo/integration/v2/claims/tracking-links'
     query = {'claim_id': myuuid}

@@ -34,7 +34,6 @@ async def watch_orders(message: types.Message):
         quantity = lst_data[key]['quantity']
         price = lst_data[key]['price']
         s_addres = lst_data[key]['second_address']
-        phone = lst_data[key]['client_phone']
         comment = lst_data[key]['comment']
         del_status = lst_data[key]['delivery_status']
         posting_number = lst_data[key]['posting_number']
@@ -69,20 +68,20 @@ async def process_data(message: types.Message, state: FSMContext):
         data['client_phone'] = message.text.split(' / ')[3]
         data['data'] = get_clients_data(card_id)
 
-        if data['address'].split()[0].isdigit():
-            data['long'] = float(data['address'].split()[0])
-            data['lat'] = float(data['address'].split()[1])
+        print(data['address'])
+
+        if str(data['address'].split()[0]).isnumeric():
+            data['long'] = str(data['address'].split()[0])
+            data['lat'] = str(data['address'].split()[1])
         else:
+            print('Использую геокодер')
             geolocator = Nominatim(user_agent="Tester")
             location = geolocator.geocode(data['address'])
-            print(location)
-            print(location.latitude, location.longitude)
             data['long'] = location.latitude
             data['lat'] = location.longitude
 
         data['description'] = f"Магазин {data['company_name']}. Забрать заказ {data['order_id']}. Если у вас возникают вопрос по доставке, напишите Вотсапе +79055935860\nОтдавать БЕЗ чека! Это подарок! Звони получателю {data['client_phone']}"
 
-    print(data['long'], data['lat'])
     await message.answer_location(data['lat'], data['long'])
     await message.answer(
 f"""ТОВАР: {data['data']['product_name']}\n

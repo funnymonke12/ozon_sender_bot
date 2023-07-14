@@ -1,7 +1,7 @@
 import json
 
 import requests
-from config import client_id, api_key
+from config import client_id, api_key, response
 
 def get_data(id, key):
     global posting_number
@@ -23,12 +23,11 @@ def get_data(id, key):
                 }
  }
 
-    response = requests.post(url=url, json=params, headers=query)
-    posts = json.loads(response.text)["result"]['postings']
-    posts = posts
+    #response = requests.post(url=url, json=params, headers=query)
+    #posts = json.loads(response.text)["result"]['postings']
+    posts = response['result']['postings']
     posts_dict = {}
     for i, post in enumerate(posts):
-
         delivery_status = post["status"]
         product_data = post["products"][0]
         product_name = product_data["name"]
@@ -39,7 +38,6 @@ def get_data(id, key):
         price = product_data["price"]
         customer = post["customer"]
         second_address = customer["address"]["address_tail"]
-        client_phone = customer["phone"]
         comment = customer["address"]["comment"]
         latitude = customer["address"]["latitude"]
         longitude = customer["address"]["longitude"]
@@ -52,7 +50,6 @@ def get_data(id, key):
                               'quantity': quantity,
                               'price': price,
                               'second_address': second_address,
-                              'client_phone': client_phone,
                               'comment': comment,
                               'posting_number': posting_number,
                               'latitude': latitude,

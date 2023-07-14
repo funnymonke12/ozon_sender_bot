@@ -1,12 +1,13 @@
 from aiogram import types, Dispatcher
 from geopy import Nominatim
-
+from validators import isNumeric
 from keyboards import main_kb, change_status_kb, inline_change_kb
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from ozon import get_data, write_delivered, write_delivering, write_last_mile, write_sended_by_seller, get_clients_data
 from ozon import get_clients_coords
 from config import client_id, api_key
+from create_bot import bot
 
 class FormSend(StatesGroup):
     data = State()
@@ -25,7 +26,6 @@ async def watch_orders(message: types.Message):
         await message.answer('В вашем личном кабинете нет заказов')
         return
     for key in lst_data.keys():
-        print(key)
         # data = lst_data[key]['data']
         product_name = lst_data[key]['product_name']
         product_id = lst_data[key]['product_id']
@@ -55,9 +55,7 @@ card_id = None
 async def process_callback_button2(callback_query: types.CallbackQuery):
     global card_id
     card_id = callback_query.message.text.split('\n')[-1].split(': ')[-1]
-    print(card_id)
     await FormSend.data.set()
-    print('Запускаем отправку')
     await callback_query.message.reply('Введите данные как в примере: адрес_1 или (ширина, высота) / Название_компании / номер_заказа / номер_клиента')
 
 async def process_data(message: types.Message, state: FSMContext):
@@ -68,21 +66,21 @@ async def process_data(message: types.Message, state: FSMContext):
         data['client_phone'] = message.text.split(' / ')[3]
         data['data'] = get_clients_data(card_id)
 
-        print(data['address'])
+        print(message.text.split(' / '))
 
-        if str(data['address'].split()[0]).isnumeric():
-            data['long'] = str(data['address'].split()[0])
-            data['lat'] = str(data['address'].split()[1])
+        if isNumeric(data['address'].split(', ')[0]):
+            data['lat'] = str(data['address'].split()[0])
+            data['long'] = str(data['address'].split()[1])
         else:
-            print('Использую геокодер')
             geolocator = Nominatim(user_agent="Tester")
             location = geolocator.geocode(data['address'])
-            data['long'] = location.latitude
-            data['lat'] = location.longitude
+            data['lat'] = location.latitude
+            data['long'] = location.longitude
+            print('Запускаю геокодер')
 
         data['description'] = f"Магазин {data['company_name']}. Забрать заказ {data['order_id']}. Если у вас возникают вопрос по доставке, напишите Вотсапе +79055935860\nОтдавать БЕЗ чека! Это подарок! Звони получателю {data['client_phone']}"
-
-    await message.answer_location(data['lat'], data['long'])
+        print(data['lat'], data['long'])
+    await bot.send_location(message.chat.id, data['lat'], data['long'])
     await message.answer(
 f"""ТОВАР: {data['data']['product_name']}\n
 {data['data']['delivery_date_begin']} - {data['data']['delivery_date_end']}'\n

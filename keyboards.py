@@ -5,6 +5,7 @@ main_kb = ReplyKeyboardMarkup(resize_keyboard=True)
 main_kb.add(button_show_orders)
 
 inline_button_change = InlineKeyboardButton('Поменять статус отправки', callback_data='change')
+inline_button_send = InlineKeyboardButton('Отправить заказ', callback_data='send')
 inline_change_kb = InlineKeyboardMarkup().add(inline_button_change)
 
 button_sending = KeyboardButton('Доставляется')

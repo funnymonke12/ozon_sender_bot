@@ -5,8 +5,9 @@ from aiogram import Dispatcher
 from aiogram import types
 from create_bot import bot
 from call_taxi import call_taxi
+from ozon import get_data
 from config import client_id, api_key
-from ozon import get_clients_coords
+
 
 
 class Form(StatesGroup):
@@ -63,6 +64,7 @@ async def process_descr(message: types.Message, state: FSMContext):
 
 # @dp.message_handler(state=Form.confirm)
 async def process_confirm(message: types.Message, state: FSMContext):
+    lst_data = get_data(client_id, api_key)
     async with state.proxy() as data:
         data['confirm'] = message.text
     schema = 'Отдавать БЕЗ чека! Это подарок!' # Номер получателя
@@ -71,16 +73,19 @@ async def process_confirm(message: types.Message, state: FSMContext):
     elif data["confirm"].lower == 'n':
         await message.answer('Отправка отменена')
         return
-    client_lat = get_clients_coords(client_id, api_key, data['card_id'])[0]
-    client_long = get_clients_coords(client_lat, api_key, data['card_id'])[1]
-    taxi_link = call_taxi(data['lat'], data['long'], client_lat, client_long)
-    await message.answer(taxi_link)
-    await message.answer('Описание для таксиста: ')
-    await message.answer(f"{data['message_to_order']}\n{schema}")
+    # client_lat = get_clients_coords(data['card_id'])[0]
+    # client_long = get_clients_coords(data['card_id'])[1]
+    if data['card_id'] in lst_data.keys():
+        taxi_link = call_taxi(f"{data['message_to_order']}\n{schema}")
+        await message.answer(taxi_link)
+        await message.answer('Описание для таксиста: ')
+        await message.answer(f"{data['message_to_order']}\n{schema}")
+    else:
+        await message.answer('Заказ не может быть собран. Проверьте ID')
     await state.finish()
 
 def register_handlers_send(dp: Dispatcher):
-    dp.register_message_handler(send_loc, commands=["send_loc"])
+    dp.register_message_handler(send_loc, commands=["send_order"])
     dp.register_message_handler(procces_card_id, state=Form.card_id)
     dp.register_message_handler(process_position, state=Form.position)
     dp.register_message_handler(process_descr, state=Form.message_to_order)

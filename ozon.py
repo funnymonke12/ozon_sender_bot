@@ -62,7 +62,10 @@ def get_data(id, key):
 def get_clients_coords(card_id):
     data = get_data(client_id, api_key)
     if str(card_id) in data.keys():
+        print(data[str(card_id)]['latitude'], data[str(card_id)]['longitude'])
         return data[str(card_id)]['latitude'], data[str(card_id)]['longitude']
+
+
 
 def get_clients_data(card_id):
     data = get_data(client_id, api_key)

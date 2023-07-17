@@ -8,6 +8,12 @@ inline_button_change = InlineKeyboardButton('Поменять статус от�
 inline_button_send = InlineKeyboardButton('Отправить заказ', callback_data='send')
 inline_change_kb = InlineKeyboardMarkup().add(inline_button_change).add(inline_button_send)
 
+button_yes = KeyboardButton('y')
+button_no = KeyboardButton('n')
+confirm_keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+confirm_keyboard.add(button_yes)
+confirm_keyboard.add(button_no)
+
 button_sending = KeyboardButton('Доставляется')
 button_last_mile = KeyboardButton('Последняя миля')
 button_sended = KeyboardButton('Доставлено')

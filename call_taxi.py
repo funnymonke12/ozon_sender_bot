@@ -18,14 +18,14 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
 },
 "emergency_contact": {
 "name": 'Иван',
-"phone": 'в описании'
+"phone": '+79055935860'
 },
 "items": [
     {
     "cost_currency": 'RUB',
     "cost_value": '10000',
-    "droppof_point": 'int route_points',
-    "pickup_point": 'integer (route points.point_id)',
+    "droppof_point": 2,
+    "pickup_point": 1,
     "quantity": quantity,
     "title": product_name,
     "fiscalization": {
@@ -34,37 +34,37 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
             "kind": 'type_coding'
             }},
     "size": {
-        "height": 'number',
-        "length": 'number',
-        "width": 'number'
+        "height": 20,
+        "length": 20,
+        "width": 20
         },
 
     }],
 'route_points': [
     {
         "address": {
-            "coordinates": [long, lat],
+            "coordinates": [float(long), float(lat)],
             "fullname": fulladdress
         },
         "contact": {
             "name": 'Ivan',
-            "phone": '88005553535'
+            "phone": client_phone
         },
-        "point_id": 'route_points.id',
+        "point_id": 1,
         "type": 'source',
         "visit_order": 1
 
     },
     {
         "address": {
-            "coordinates": [client_long, client_lat],
+            "coordinates": [float(client_long), float(client_lat)],
             "fullname": client_fulladdress
         },
         "contact": {
             "name": 'Ivan',
             "phone": client_phone
         },
-        "point_id": 'route_points.id',
+        "point_id": 2,
         "type": 'source',
         "visit_order": 1
 
@@ -74,6 +74,17 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
     }
 
     response = requests.post(url, params=params, headers=headers, json=body)
+    print(response)
+    print(response.text)
+
+
+    print()
+    url = f'https://b2b.taxi.yandex.net/b2b/cargo/integration/v2/claims/create'
+    params = {'claim_id': myuuid}
+    headers = {'Authorization': f"Bearer {OAuth}",
+                'Accept-Language': 'ru'}
+    response = requests.get(url, params=params, headers=headers)
+    print(response)
     print(response.text)
 
 

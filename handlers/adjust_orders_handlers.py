@@ -1,6 +1,5 @@
 from aiogram import types, Dispatcher
-from geopy import Nominatim
-from keyboards import main_kb, change_status_kb, inline_change_kb
+from keyboards import main_kb, change_status_kb, inline_change_kb, confirm_keyboard
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from ozon import get_data, write_delivered, write_delivering, write_last_mile, write_sended_by_seller, get_clients_data
@@ -9,6 +8,7 @@ from ozon import get_clients_coords
 from call_taxi import call_taxi
 from create_bot import bot
 from geocoder import get_address
+from validators import isNumeric
 
 class FormSend(StatesGroup):
     data = State()
@@ -63,16 +63,21 @@ async def process_callback_button2(callback_query: types.CallbackQuery):
 async def process_data(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['address'] = message.text.split(' / ')[0]
+        if not isNumeric(data["address"].split(', ')[0]):
+            await message.answer('Извините, но сейчас ввод по адресу не работает попробуйте использовать координаты.')
+            return
         data['lat'] = data['address'].split(', ')[0]
         data['long'] = data['address'].split(', ')[1]
         data['company_name'] = message.text.split(' / ')[1]
         data['order_id'] = message.text.split(' / ')[2]
-        data['client_phone'] = message.text.split(' / ')[3]
+        data['client_phone'] = message.text.split(' / ')[3].strip()
+        print(len(data['client_phone']))
+        print(data['client_phone'])
         data['data'] = get_clients_data(card_id)
         data['quantity'] = get_clients_data(card_id)["quantity"]
         data['product_name'] = get_clients_data(card_id)["product_name"]
-        data['client_lat'] = get_clients_coords(card_id)
-        data['client_long'] = get_clients_coords(card_id)
+        data['client_lat'] = get_clients_coords(card_id)[0]
+        data['client_long'] = get_clients_coords(card_id)[1]
         data['client_fulladdress'] = s_addres
         fulladdress = get_address(data['lat'], data['long'])
         data['fulladdress'] = fulladdress
@@ -84,7 +89,7 @@ f"""ТОВАР: {data['data']['product_name']}\n
 АДРЕС 1: {data['address']}\n
 {data['description']}\n
 АДРЕС 2: {data['data']['second_address']}
-""")
+""", reply_markup=confirm_keyboard)
 
     await FormSend.next()
     await message.reply("Вы подтверждаете отправку? Y/N")

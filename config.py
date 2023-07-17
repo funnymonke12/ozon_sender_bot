@@ -34,9 +34,9 @@ response = {
 "cancellation_initiator": ""
 },
 "customer": {"address": {"comment": 'Коментарий клиента',
-                         'latitude': 'широта',
-                         'longitude': 'долгота',
-                         'address_tail': 'Адрес клиента'
+                         'latitude': '57.871509',
+                         'longitude': '59.955080',
+                         'address_tail': 'Октябрьский проспект, 28, Нижний Тагил, Свердловская область'
                          }
             },
 "products": [
@@ -127,3 +127,6 @@ response = {
 "count": 55
 }
 }
+
+
+

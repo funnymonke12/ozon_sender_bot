@@ -2,6 +2,7 @@ client_id = '44465'
 api_key = '2d83943a-b69a-4215-8774-6166529da38d'
 bot_api = '6334867951:AAEi8jZeTbz--jju_1Sf5XV9NquHUjQQJFk'
 OAuth = 'y0_AgAAAABklX-XAAc6MQAAAADXUf2CHF3GQ268RMGJeXJSNx-otX3SVgk'
+geocoder_key = '0567c4eb-ead9-4521-87ab-2adecfa15d1a'
 
 response = {
 "result": {

@@ -1,13 +1,14 @@
 from aiogram import types, Dispatcher
 from geopy import Nominatim
-from validators import isNumeric
 from keyboards import main_kb, change_status_kb, inline_change_kb
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from ozon import get_data, write_delivered, write_delivering, write_last_mile, write_sended_by_seller, get_clients_data
-from ozon import get_clients_coords
 from config import client_id, api_key
+from ozon import get_clients_coords
+from call_taxi import call_taxi
 from create_bot import bot
+from geocoder import get_address
 
 class FormSend(StatesGroup):
     data = State()
@@ -21,6 +22,7 @@ async def send_welcome(message: types.Message):
 
 # @dp.message_handler(commands=['watch_orders'])
 async def watch_orders(message: types.Message):
+    global s_addres
     lst_data = get_data(client_id, api_key)
     if not lst_data:
         await message.answer('В вашем личном кабинете нет заказов')
@@ -61,25 +63,20 @@ async def process_callback_button2(callback_query: types.CallbackQuery):
 async def process_data(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['address'] = message.text.split(' / ')[0]
+        data['lat'] = data['address'].split(', ')[0]
+        data['long'] = data['address'].split(', ')[1]
         data['company_name'] = message.text.split(' / ')[1]
         data['order_id'] = message.text.split(' / ')[2]
         data['client_phone'] = message.text.split(' / ')[3]
         data['data'] = get_clients_data(card_id)
-
-        print(message.text.split(' / '))
-
-        if isNumeric(data['address'].split(', ')[0]):
-            data['lat'] = str(data['address'].split()[0])
-            data['long'] = str(data['address'].split()[1])
-        else:
-            geolocator = Nominatim(user_agent="Tester")
-            location = geolocator.geocode(data['address'])
-            data['lat'] = location.latitude
-            data['long'] = location.longitude
-            print('Запускаю геокодер')
-
-        data['description'] = f"Магазин {data['company_name']}. Забрать заказ {data['order_id']}. Если у вас возникают вопрос по доставке, напишите Вотсапе +79055935860\nОтдавать БЕЗ чека! Это подарок! Звони получателю {data['client_phone']}"
-        print(data['lat'], data['long'])
+        data['quantity'] = get_clients_data(card_id)["quantity"]
+        data['product_name'] = get_clients_data(card_id)["product_name"]
+        data['client_lat'] = get_clients_coords(card_id)
+        data['client_long'] = get_clients_coords(card_id)
+        data['client_fulladdress'] = s_addres
+        fulladdress = get_address(data['lat'], data['long'])
+        data['fulladdress'] = fulladdress
+        data['description'] = f"Магазин {data['company_name']}. Забрать заказ {data['order_id']}. Если у вас возникают вопрос по доставке, напишите Вотсапе +79055935860\n Для 2 точки: Отдавать БЕЗ чека! Это подарок! Звони получателю {data['client_phone']}"
     await bot.send_location(message.chat.id, data['lat'], data['long'])
     await message.answer(
 f"""ТОВАР: {data['data']['product_name']}\n
@@ -101,10 +98,9 @@ async def process_confirm(message: types.Message, state: FSMContext):
         await message.answer('Отменяю отправку')
         return
     await message.answer('Вызываю экспресс доставку')
+
+    call_taxi(data['description'], data['long'], data['lat'], data['client_long'], data['client_lat'], data['client_phone'], data['fulladdress'], data['client_fulladdress'], data['quantity'], data['product_name'])
     await state.finish()
-
-
-
 
 post_number = None
 # @dp.callback_query_handler(lambda c: c.data == 'change')

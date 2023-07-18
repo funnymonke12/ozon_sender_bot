@@ -34,9 +34,9 @@ response = {
 "cancellation_initiator": ""
 },
 "customer": {"address": {"comment": 'Коментарий клиента',
-                         'latitude': '57.871509',
-                         'longitude': '59.955080',
-                         'address_tail': 'Октябрьский проспект, 28, Нижний Тагил, Свердловская область'
+                         'latitude': '55.751254',
+                         'longitude': '37.597432',
+                         'address_tail': 'улица Арбат, 13, Москва'
                          }
             },
 "products": [

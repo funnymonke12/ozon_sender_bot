@@ -7,11 +7,13 @@ from config import OAuth
 
 def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdress, client_fulladdress, quantity, product_name):
     myuuid = str(uuid.uuid4())
+    print(myuuid)
     url = f'https://b2b.taxi.yandex.net/b2b/cargo/integration/v2/claims/create'
     params = {'request_id': myuuid}
     headers = {'Authorization': f"Bearer {OAuth}",
                'Accept-Language': 'en'}
-    body = {
+    request_body = {
+'auto_accept': False,
 'comment': comm,
 "client_requirements": {
         "taxi_class": 'express'
@@ -24,8 +26,8 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
     {
     "cost_currency": 'RUB',
     "cost_value": '10000',
-    "droppof_point": 2,
-    "pickup_point": 1,
+    "droppof_point": 1,
+    "pickup_point": 0,
     "quantity": quantity,
     "title": product_name,
     "fiscalization": {
@@ -34,9 +36,9 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
             "kind": 'type_coding'
             }},
     "size": {
-        "height": 1000,
-        "length": 1000,
-        "width": 1000
+        "height": 20,
+        "length": 20,
+        "width": 20
         },
 
     }],
@@ -50,10 +52,9 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
             "name": 'Ivan',
             "phone": client_phone
         },
-        "point_id": 1,
+        "point_id": 0,
         "type": 'source',
         "visit_order": 1
-
     },
     {
         "address": {
@@ -64,16 +65,15 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
             "name": 'Ivan',
             "phone": client_phone
         },
-        "point_id": 2,
-        "type": 'source',
+        "point_id": 1,
+        "type": 'destination',
         "visit_order": 2
-
     }
 ]
 
     }
 
-    response = requests.post(url, params=params, headers=headers, json=json.dumps(body))
+    response = requests.post(url, params=params, headers=headers, json=request_body)
     print(response)
     print(response.text)
 

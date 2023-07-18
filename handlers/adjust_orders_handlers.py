@@ -71,8 +71,6 @@ async def process_data(message: types.Message, state: FSMContext):
         data['company_name'] = message.text.split(' / ')[1]
         data['order_id'] = message.text.split(' / ')[2]
         data['client_phone'] = message.text.split(' / ')[3].strip()
-        print(len(data['client_phone']))
-        print(data['client_phone'])
         data['data'] = get_clients_data(card_id)
         data['quantity'] = get_clients_data(card_id)["quantity"]
         data['product_name'] = get_clients_data(card_id)["product_name"]
@@ -82,6 +80,9 @@ async def process_data(message: types.Message, state: FSMContext):
         fulladdress = get_address(data['lat'], data['long'])
         data['fulladdress'] = fulladdress
         data['description'] = f"Магазин {data['company_name']}. Забрать заказ {data['order_id']}. Если у вас возникают вопрос по доставке, напишите Вотсапе +79055935860\n Для 2 точки: Отдавать БЕЗ чека! Это подарок! Звони получателю {data['client_phone']}"
+    print(message.text)
+    print(f'Адрес отправителя: {data["fulladdress"]}')
+    print(f"Адрес клиента: {data['client_fulladdress']}")
     await bot.send_location(message.chat.id, data['lat'], data['long'])
     await message.answer(
 f"""ТОВАР: {data['data']['product_name']}\n
@@ -98,12 +99,12 @@ f"""ТОВАР: {data['data']['product_name']}\n
 async def process_confirm(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['confirm_send'] = message.text.lower()
-    print('Подтвердили отправку')
     if data['confirm_send'] == 'n':
         await message.answer('Отменяю отправку')
+        await state.finish()
         return
     await message.answer('Вызываю экспресс доставку')
-
+    print('Отправка подтверждена вызываю такси')
     call_taxi(data['description'], data['long'], data['lat'], data['client_long'], data['client_lat'], data['client_phone'], data['fulladdress'], data['client_fulladdress'], data['quantity'], data['product_name'])
     await state.finish()
 

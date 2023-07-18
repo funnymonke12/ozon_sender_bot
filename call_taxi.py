@@ -6,11 +6,11 @@ from config import OAuth
 
 
 def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdress, client_fulladdress, quantity, product_name):
-    myuuid = uuid.uuid4()
+    myuuid = str(uuid.uuid4())
     url = f'https://b2b.taxi.yandex.net/b2b/cargo/integration/v2/claims/create'
     params = {'request_id': myuuid}
     headers = {'Authorization': f"Bearer {OAuth}",
-        'Accept-Language': 'ru'}
+               'Accept-Language': 'en'}
     body = {
 'comment': comm,
 "client_requirements": {
@@ -34,9 +34,9 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
             "kind": 'type_coding'
             }},
     "size": {
-        "height": 20,
-        "length": 20,
-        "width": 20
+        "height": 1000,
+        "length": 1000,
+        "width": 1000
         },
 
     }],
@@ -66,14 +66,14 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
         },
         "point_id": 2,
         "type": 'source',
-        "visit_order": 1
+        "visit_order": 2
 
     }
 ]
 
     }
 
-    response = requests.post(url, params=params, headers=headers, json=body)
+    response = requests.post(url, params=params, headers=headers, json=json.dumps(body))
     print(response)
     print(response.text)
 

@@ -1,4 +1,5 @@
 import json
+import time
 
 import requests
 import uuid
@@ -13,7 +14,6 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
     headers = {'Authorization': f"Bearer {OAuth}",
                'Accept-Language': 'en'}
     request_body = {
-'auto_accept': False,
 'comment': comm,
 "client_requirements": {
         "taxi_class": 'express'
@@ -76,14 +76,18 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
     response = requests.post(url, params=params, headers=headers, json=request_body)
     print(response)
     print(response.text)
+    print(type(response.text))
+    order_id = json.loads(response.text)['id']
+    time.sleep(180)
+    confirm_order(order_id)
 
-
-    print()
-    url = f'https://b2b.taxi.yandex.net/b2b/cargo/integration/v2/claims/create'
-    params = {'claim_id': myuuid}
+def confirm_order(order_id):
+    url = 'https://b2b.taxi.yandex.net/b2b/cargo/integration/v2/claims/accept'
+    params = {'claim_id': order_id}
     headers = {'Authorization': f"Bearer {OAuth}",
-                'Accept-Language': 'ru'}
-    response = requests.get(url, params=params, headers=headers)
+               'Accept-Language': 'en',}
+    request_body = {'version': 1}
+    response = requests.post(url, params=params, headers=headers, json=request_body)
     print(response)
     print(response.text)
 

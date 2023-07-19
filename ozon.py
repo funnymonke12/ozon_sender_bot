@@ -23,9 +23,9 @@ def get_data(id, key):
                 }
  }
 
-    #response = requests.post(url=url, json=params, headers=query)
-    #posts = json.loads(response.text)["result"]['postings']
-    posts = response['result']['postings']
+    response = requests.post(url=url, json=params, headers=query)
+    posts = json.loads(response.text)["result"]['postings']
+    #posts = response['result']['postings']
     posts_dict = {}
     for i, post in enumerate(posts):
         delivery_status = post["status"]

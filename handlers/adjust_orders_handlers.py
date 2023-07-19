@@ -7,7 +7,7 @@ from config import client_id, api_key
 from ozon import get_clients_coords
 from call_taxi import call_taxi
 from create_bot import bot
-from geocoder import get_address
+from geocoder import get_address, get_coords
 from validators import isNumeric
 
 class FormSend(StatesGroup):
@@ -64,10 +64,11 @@ async def process_data(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['address'] = message.text.split(' / ')[0]
         if not isNumeric(data["address"].split(', ')[0]):
-            await message.answer('Извините, но сейчас ввод по адресу не работает попробуйте использовать координаты.')
-            return
-        data['lat'] = data['address'].split(', ')[0]
-        data['long'] = data['address'].split(', ')[1]
+            data['lat'] = get_coords(data['address'])[0]
+            data['long'] = get_coords(data['address'])[1]
+        else:
+            data['lat'] = data['address'].split(', ')[0]
+            data['long'] = data['address'].split(', ')[1]
         data['company_name'] = message.text.split(' / ')[1]
         data['order_id'] = message.text.split(' / ')[2]
         data['client_phone'] = message.text.split(' / ')[3].strip()
@@ -103,7 +104,7 @@ async def process_confirm(message: types.Message, state: FSMContext):
         await message.answer('Отменяю отправку')
         await state.finish()
         return
-    await message.answer('Вызываю экспресс доставку')
+    await message.answer('Вызываю экспресс доставку, Подождите немного идёт отправка.')
     print('Отправка подтверждена вызываю такси')
     call_taxi(data['description'], data['long'], data['lat'], data['client_long'], data['client_lat'], data['client_phone'], data['fulladdress'], data['client_fulladdress'], data['quantity'], data['product_name'])
     await state.finish()

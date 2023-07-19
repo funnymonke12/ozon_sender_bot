@@ -50,7 +50,7 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
         },
         "contact": {
             "name": 'Ivan',
-            "phone": client_phone
+            "phone": '+79055935860'
         },
         "point_id": 0,
         "type": 'source',
@@ -78,7 +78,7 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
     print(response.text)
     print(type(response.text))
     order_id = json.loads(response.text)['id']
-    time.sleep(180)
+    time.sleep(1)
     confirm_order(order_id)
 
 def confirm_order(order_id):

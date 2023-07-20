@@ -77,7 +77,7 @@ async def process_data(message: types.Message, state: FSMContext):
         data['product_name'] = get_clients_data(card_id)["product_name"]
         data['client_lat'] = get_clients_coords(card_id)[0]
         data['client_long'] = get_clients_coords(card_id)[1]
-        data['client_fulladdress'] = s_addres
+        data['client_fulladdress'] = get_clients_data(card_id)['second_address']
         fulladdress = get_address(data['lat'], data['long'])
         data['fulladdress'] = fulladdress
         data['description'] = f"Магазин {data['company_name']}. Забрать заказ {data['order_id']}. Если у вас возникают вопрос по доставке, напишите Вотсапе +79055935860\n Для 2 точки: Отдавать БЕЗ чека! Это подарок! Звони получателю {data['client_phone']}"

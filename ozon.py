@@ -11,8 +11,7 @@ def get_data(id, key):
 
     params = {
         "dir": "asc",
-        "filter": {"cutoff_from": "2021-10-24T14:15:22Z", "cutoff_to": "2030-11-24T14:15:22Z",
-                   "status": "awaiting_packaging"},
+        "filter": {"cutoff_from": "2021-10-24T14:15:22Z", "cutoff_to": "2030-11-24T14:15:22Z"},
         "limit": 100,
         "offset": 0,
         "with": {

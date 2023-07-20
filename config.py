@@ -1,6 +1,6 @@
 client_id = '1164647'
 api_key = 'c4bffaf0-da01-4c67-b91c-af2e7bff4a8d'
-bot_api = '6316834487:AAFQZIuEjZsxw8KGp5w8ADTUTYAtder5W3w'
+bot_api = '6334867951:AAEi8jZeTbz--jju_1Sf5XV9NquHUjQQJFk'
 OAuth = 'y0_AgAAAABklX-XAAc6MQAAAADXUf2CHF3GQ268RMGJeXJSNx-otX3SVgk'
 geocoder_key = '0567c4eb-ead9-4521-87ab-2adecfa15d1a'
 

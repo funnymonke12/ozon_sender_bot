@@ -1,6 +1,12 @@
-client_id = '1164647'
-api_key = 'c4bffaf0-da01-4c67-b91c-af2e7bff4a8d'
-bot_api = '6334867951:AAEi8jZeTbz--jju_1Sf5XV9NquHUjQQJFk'
+api_keys = [('Tropic of Trade', '1164647', 'c4bffaf0-da01-4c67-b91c-af2e7bff4a8d'),
+            ('Idea Inventor', '1151381', 'be60399b-3502-453a-a8af-1e58396aa693'),
+            ('Express Beast', '1227099', '3d7e45b1-ff05-44e6-9a20-3fb0e3a84258'),
+            ('MetroExpress', '1218747', 'c428beb2-e90b-4a3c-8bc2-ee52b6121e87'),
+            ('Express Dharma', '1217122', 'd6500f1e-d97c-4f59-ab81-f38efe30c877'),
+            ('Mario Cart', '1267379', '094bf0ae-3d15-4813-995a-b838da191535'),
+            ('ИП УКОЛОВ', '1246235', 'bece440d-2221-42e5-b744-53d2a470d23c'),
+            ('Tactical Gear Hub', '1248044', 'c88bd6f1-6b9d-4272-aa7a-646126f059ec')]
+bot_api = '6316834487:AAFQZIuEjZsxw8KGp5w8ADTUTYAtder5W3w'
 OAuth = 'y0_AgAAAABklX-XAAc6MQAAAADXUf2CHF3GQ268RMGJeXJSNx-otX3SVgk'
 geocoder_key = '0567c4eb-ead9-4521-87ab-2adecfa15d1a'
 

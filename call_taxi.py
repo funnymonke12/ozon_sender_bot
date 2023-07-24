@@ -63,7 +63,7 @@ def call_taxi(comm, long, lat, client_long, client_lat, client_phone, fulladdres
         },
         "contact": {
             "name": 'Ivan',
-            "phone": client_phone
+            "phone": '+79033540251'
         },
         "point_id": 1,
         "type": 'destination',

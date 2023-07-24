@@ -3,12 +3,12 @@ from keyboards import main_kb, change_status_kb, inline_change_kb, confirm_keybo
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from ozon import get_data, write_delivered, write_delivering, write_last_mile, write_sended_by_seller, get_clients_data
-from config import client_id, api_key
 from ozon import get_clients_coords
 from call_taxi import call_taxi
-from create_bot import bot
+from create_bot import bot, loop
 from geocoder import get_address, get_coords
 from validators import isNumeric
+import asyncio
 
 class FormSend(StatesGroup):
     data = State()
@@ -19,11 +19,16 @@ class FormStatus(StatesGroup):
 # @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     await message.answer('Приветствую, здесь ты можешь управлять своими заказами', reply_markup=main_kb)
+async def helloworld():
+    while True:
+        print('10sec')
+        await asyncio.sleep(10)
 
-# @dp.message_handler(commands=['watch_orders'])
+s_addres = ''
 async def watch_orders(message: types.Message):
     global s_addres
-    lst_data = get_data(client_id, api_key)
+    lst_data = get_data()
+
     if not lst_data:
         await message.answer('В вашем личном кабинете нет заказов')
         return
@@ -40,16 +45,16 @@ async def watch_orders(message: types.Message):
         del_status = lst_data[key]['delivery_status']
         posting_number = lst_data[key]['posting_number']
         card_id = lst_data[key]['card_id']
+        shop = lst_data[key]['shop']
         await message.answer(
 f"""Название товара: {product_name}
-Артикул: {product_id}
-Дата отправления-доставки: {date_begin}-{date_end}
+Дата отправления-доставки: {date_begin}   -   {date_end}
 Количество: {quantity}
 Цена: {price}
 Адресс клиента: {s_addres}
 Комментарий клиента: {comment}
 статус: {del_status}
-Номер поставки: {posting_number}
+Магазин: {shop}
 Айди карточки: {card_id}""", reply_markup=inline_change_kb)
 
 card_id = None
@@ -107,6 +112,7 @@ async def process_confirm(message: types.Message, state: FSMContext):
     await message.answer('Вызываю экспресс доставку, Подождите немного идёт отправка.')
     print('Отправка подтверждена вызываю такси')
     call_taxi(data['description'], data['long'], data['lat'], data['client_long'], data['client_lat'], data['client_phone'], data['fulladdress'], data['client_fulladdress'], data['quantity'], data['product_name'])
+    loop.create_task(helloworld())
     await state.finish()
 
 post_number = None
@@ -123,14 +129,14 @@ async def process_status(message: types.Message, state: FSMContext):
         status = data['status']
 
     await message.answer(f"Статус отправки поменян на: {status}")
-    if status == 'Доставляется':
-        write_delivering(client_id, api_key, post_number)
-    elif status == 'Последняя миля':
-        write_last_mile(client_id, api_key, post_number)
-    elif status == 'Доставлено':
-        write_delivered(client_id, api_key, post_number)
-    elif status == 'Отправлено продавцом':
-        write_sended_by_seller(client_id, api_key, post_number)
+    # if status == 'Доставляется':
+    #     write_delivering(client_id, api_key, post_number)
+    # elif status == 'Последняя миля':
+    #     write_last_mile(client_id, api_key, post_number)
+    # elif status == 'Доставлено':
+    #     write_delivered(client_id, api_key, post_number)
+    # elif status == 'Отправлено продавцом':
+    #     write_sended_by_seller(client_id, api_key, post_number)
     await state.finish()
 
 

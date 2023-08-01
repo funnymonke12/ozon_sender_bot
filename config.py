@@ -6,7 +6,8 @@ api_keys = [('Tropic of Trade', '1164647', 'c4bffaf0-da01-4c67-b91c-af2e7bff4a8d
             ('Mario Cart', '1267379', '094bf0ae-3d15-4813-995a-b838da191535'),
             ('ИП УКОЛОВ', '1246235', 'bece440d-2221-42e5-b744-53d2a470d23c'),
             ('Tactical Gear Hub', '1248044', 'c88bd6f1-6b9d-4272-aa7a-646126f059ec')]
-bot_api = '6316834487:AAFQZIuEjZsxw8KGp5w8ADTUTYAtder5W3w'
+bot_api = '6316834487:AAFQZIuEjZsxw8KGp5w8ADTUTYAtder5W3w' #Test
+#bot_api = '6334867951:AAEi8jZeTbz--jju_1Sf5XV9NquHUjQQJFk'
 OAuth = 'y0_AgAAAABklX-XAAc6MQAAAADXUf2CHF3GQ268RMGJeXJSNx-otX3SVgk'
 geocoder_key = '0567c4eb-ead9-4521-87ab-2adecfa15d1a'
 

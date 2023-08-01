@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 
 import requests
 from config import api_keys
@@ -16,7 +17,8 @@ def get_data():
 
         params = {
             "dir": "asc",
-            "filter": {"cutoff_from": "2021-10-24T14:15:22Z", "cutoff_to": "2030-11-24T14:15:22Z"},
+            "filter": {"cutoff_from": "2021-10-24T14:15:22Z", "cutoff_to": "2030-11-24T14:15:22Z",
+                       },
             "limit": 100,
             "offset": 0,
             "with": {
@@ -29,9 +31,13 @@ def get_data():
 
         response = requests.post(url=url, json=params, headers=query)
         posts = json.loads(response.text)["result"]['postings']
+        print(posts)
 
         for post in posts:
             delivery_status = post["status"]
+            # if delivery_status == 'client_arbitration':
+            #     print('Убрал client arbitraion')
+            #     continue
             product_data = post["products"][0]
             product_name = product_data["name"]
             product_id = product_data["offer_id"]
@@ -69,7 +75,7 @@ def get_data():
 def get_clients_coords(card_id):
     data = posts_dict
     if str(card_id) in data.keys():
-        print(data[str(card_id)]['latitude'], data[str(card_id)]['longitude'])
+        print(f"Вывожу координаты клиента: {data[str(card_id)]['latitude'], data[str(card_id)]['longitude']}")
         return data[str(card_id)]['latitude'], data[str(card_id)]['longitude']
 
 def get_clients_data(card_id):
@@ -79,8 +85,13 @@ def get_clients_data(card_id):
 def do_request(url, card_id):
     headers = {'Client-Id': get_clients_data(card_id)['client_id'],
              'Api-Key': get_clients_data(card_id)['api_key']}
-    body = {'posting_number': get_clients_data(card_id)['posting_number']}
-    requests.post(url, headers=headers, json=body)
+    body = {
+        'posting_number':[
+            get_clients_data(card_id)['posting_number']
+        ]
+    }
+    response = requests.post(url, headers=headers, json=body)
+    print(response.text)
 def write_delivering(card_id):
     url = 'https://api-seller.ozon.ru/v2/fbs/posting/delivering'
     do_request(url, card_id)
